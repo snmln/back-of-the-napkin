@@ -1,0 +1,37 @@
+<div class="rov">
+    <div class="col-lg-2">
+        <div class="d-grid"><button class="btn btn-primary brn-block" type="button" (click)="backToHome()">Back to
+                Home</button></div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-lg-2">
+        <div class="car border-secondary mb-3">
+            <div class="card-header h3 text-muted text-center">users</div>
+            <div class="card-boady" style="min-height: 555px;">
+                <div class="row mt-1" *ngFor="let user of chatService.onlineUsers">
+                    <div class="col">
+                        <div class="d-grid">
+                            <button type="button" class="btn btn-success card-text btn-block"
+                                [ngClass]="{'btn-success' : user === chatService.myName, 'btn-dark' : user !== chatService.myName}"
+                                [disabled]="user === chatService.myName"
+                                (dblclick)="openPrivateChat(user)">{{user}}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-9">
+        <div class="card border-secondary">
+            <div class="card-header h3 text-muted text-center">message</div>
+            <div class="card-body" style="min-height: 500px;">
+                <app-messages [messages]="chatService.messages"></app-messages>
+            </div>
+            <div class="card-footer">
+                <app-chat-input (contentEmitter)="sendMessage($event)"></app-chat-input>
+            </div>
+        </div>
+    </div>
+</div>
