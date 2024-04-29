@@ -80,8 +80,8 @@ export class ChatService {
 
   async sendDraw(x: any, y: any) {
 
-    let coordinates = { xCord: x, yCord: y }
-    this.chatConnection?.invoke("SendDraw", coordinates)
+    let lineSettings = { xCord: x, yCord: y }
+    this.chatConnection?.invoke("SendDraw", lineSettings)
       .catch(err => console.error(err.toString()));
   }
 

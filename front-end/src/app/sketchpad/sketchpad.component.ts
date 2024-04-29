@@ -9,8 +9,8 @@ import {
   AfterViewInit
 } from "@angular/core";
 import { ChatService } from "../services/chat.service";
-import { fromEvent, combineLatest } from "rxjs";
-import { filter, tap, concatMap, mergeMap, takeUntil } from "rxjs/operators";
+import { fromEvent, combineLatest, EMPTY } from "rxjs";
+import { filter, tap, concatMap, mergeMap, takeUntil, timeout, finalize } from "rxjs/operators";
 
 export enum Direction {
   up,
@@ -65,9 +65,22 @@ export class SketchpadComponent implements OnInit, AfterViewInit {
   constructor(private el: ElementRef, public chatService: ChatService,) { }
 
   ngOnInit() {
-    this.chatService.sketchPad.subscribe((coordinates) => {
-      this.draw(coordinates.x, coordinates.y)
-    });
+
+    this.chatService.sketchPad
+      // .pipe(
+      //   //   timeout({
+      //   //   each: 1000,
+      //   //   with: () => this.cx.beginPath(),
+      //   // })
+      //   finalize(() => { console.log('mouseup was triggerd') })
+      // )
+      .subscribe((coordinates: any) => {
+        this.drawFromRemote(coordinates.x, coordinates.y)
+
+        // this.cx.beginPath();
+
+
+      });
   }
 
   ngAfterViewInit(): void {
@@ -85,13 +98,15 @@ export class SketchpadComponent implements OnInit, AfterViewInit {
       tap((e: any) => {
         this.cx.moveTo(e.offsetX, e.offsetY);
         this.cx.beginPath();
-
         this.isDrawing = true;
       }),
       concatMap(() => mouseMove$.pipe(takeUntil(mouseUp$)))
     );
     mouseDraw$.subscribe((e: any) => this.mouseDraw(e.offsetX, e.offsetY));
-    mouseUp$.subscribe(() => this.stopDrawing())
+    mouseUp$.subscribe(() => {
+      this.stopDrawing()
+      // this.cx.beginPath()
+    })
   }
 
   mouseDraw(offsetX: any, offsetY: any) {
@@ -99,10 +114,27 @@ export class SketchpadComponent implements OnInit, AfterViewInit {
     this.draw(offsetX, offsetY)
     this.chatService.sendDraw(offsetX, offsetY);
 
+    // this.chatService.sendDraw(offsetX, offsetY, this.cx.strokeStyle,  this.cx.lineWidth ); //RETURN TO SENDING COLOR DATA
+  }
+
+  logCurrentState() {
+    console.log(
+      'lineWidth: ', this.cx.lineWidth,
+      '\n',
+      'strokeStyle: ', this.cx.strokeStyle,)
   }
 
   public draw(offsetX: any, offsetY: any) {
     this.cx.lineTo(offsetX, offsetY);
+    this.cx.lineCap = 'round';
+    this.cx.stroke();
+    // this.logCurrentState()
+  }
+
+  public drawFromRemote(offsetX: any, offsetY: any) {
+    this.cx.arc(offsetX, offsetY, 2, 0, 2 * Math.PI, true);
+    // this.cx.lineTo(offsetX, offsetY);
+    this.cx.lineCap = 'round';
     this.cx.stroke();
   }
 

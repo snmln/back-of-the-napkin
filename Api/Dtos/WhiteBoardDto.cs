@@ -9,6 +9,9 @@ namespace Api.Dtos
     public int xCord { get; set; }
     [Required]
     public int yCord { get; set; }
+    //public int strokeWidth { get; set; }
+    //public string strokeColor { get; set; }
+
   }
 }
 
