@@ -9,8 +9,9 @@ import {
   AfterViewInit
 } from "@angular/core";
 import { ChatService } from "../services/chat.service";
-import { fromEvent, combineLatest, EMPTY } from "rxjs";
+import { fromEvent, combineLatest, EMPTY, Subscription } from "rxjs";
 import { filter, tap, concatMap, mergeMap, takeUntil, timeout, finalize } from "rxjs/operators";
+import { Event } from "@angular/router";
 
 export enum Direction {
   up,
@@ -57,58 +58,136 @@ export class SketchpadComponent implements OnInit, AfterViewInit {
   currentLocation = { x: 200, y: 200 };
   preDirection: string = '';
   isDrawing = false;
-
+  startX: number;
+  startY: number;
+  prevStartX = 0;
+  prevStartY = 0;
+  prevWidth = 0;
+  prevHeight = 0;
   locationList: Cordinates[] = [];
+  subscriptions = new Subscription();
 
   @ViewChild("myCanvas", { static: false }) myCanvas: ElementRef;
 
   constructor(private el: ElementRef, public chatService: ChatService,) { }
 
+
   ngOnInit() {
 
-    this.chatService.sketchPad
-      // .pipe(
-      //   //   timeout({
-      //   //   each: 1000,
-      //   //   with: () => this.cx.beginPath(),
-      //   // })
-      //   finalize(() => { console.log('mouseup was triggerd') })
-      // )
-      .subscribe((coordinates: any) => {
-        this.drawFromRemote(coordinates.x, coordinates.y)
+    // this.chatService.sketchPad
 
-        // this.cx.beginPath();
+    // .pipe(
+    //   //   timeout({
+    //   //   each: 1000,
+    //   //   with: () => this.cx.beginPath(),
+    //   // })
+    //   finalize(() => { console.log('mouseup was triggerd') })
+    // )
+
+    // .subscribe((coordinates: any) => {
+    // this.drawFromRemote(coordinates.x, coordinates.y)
+
+    // this.cx.beginPath();
 
 
-      });
+    // });
   }
 
   ngAfterViewInit(): void {
-    const canvasEl: HTMLCanvasElement = this.myCanvas.nativeElement;
+    var canvasEl: HTMLCanvasElement = this.myCanvas.nativeElement;
     this.cx = canvasEl.getContext("2d");
     // this.cx.fillStyle = "#FFFBE2"; //NOT WORKING NEED TO LOOK INTO CHANGEING BACKGROUND COLOR\
+    this.line()
 
-    const mouseDown$ = fromEvent(this.myCanvas.nativeElement, "mousedown");
-    const mouseMove$ = fromEvent(this.myCanvas.nativeElement, "mousemove");
-    const mouseUp$ = fromEvent(this.myCanvas.nativeElement, "mouseup");
+  }
 
-    mouseDown$.pipe(concatMap(down => mouseMove$.pipe(takeUntil(mouseUp$))));
+  square() {
 
-    const mouseDraw$ = mouseDown$.pipe(
+    this.cx.strokeStyle = "blue";
+    this.cx.lineWidth = 3;
+
+    const squareMouseDown$ = fromEvent(this.myCanvas.nativeElement, "mousedown");
+    const suqareMouseMove$ = fromEvent(this.myCanvas.nativeElement, "mousemove");
+    const squareMouseUp$ = fromEvent(this.myCanvas.nativeElement, "mouseup");
+
+    const mouseDraw$ = squareMouseDown$.pipe(
+      tap((e: any) => {
+        this.cx.moveTo(e.offsetX, e.offsetY);
+        this.cx.beginPath();
+        this.isDrawing = true;
+        this.startX = e.offsetX
+        this.startY = e.offsetY
+
+      }),
+      concatMap(() => suqareMouseMove$.pipe(takeUntil(squareMouseUp$)))
+    );
+    mouseDraw$.subscribe((e: any) => this.drawSquare(e));
+    squareMouseUp$.subscribe((e: any) => {
+      this.stopDrawing()
+      this.cx.strokeRect(this.prevStartX, this.prevStartY, this.prevWidth, this.prevHeight);
+    })
+  }
+
+  drawSquare(e: any) {
+    var canvasEl: HTMLCanvasElement = this.myCanvas.nativeElement;
+
+    // var canvasOffset = canvasEl.offset();
+
+    // var offsetX: number = canvasOffset.left;
+    // var offsetY: number = canvasOffset.top;
+    // if we're not dragging, just return
+    if (!this.isDrawing) {
+      return;
+    }
+
+    // get the current mouse position
+    // let mouseX: number = e.clientX - offsetX;
+    // let mouseY: number = e.clientY - offsetY;
+    let mouseX: number = e.clientX;
+    let mouseY: number = e.clientY;
+    // Put your mousemove stuff here
+
+
+
+    // calculate the rectangle width/height based
+    // on starting vs current mouse position
+    var width = mouseX - this.startX;
+    var height = mouseY - this.startY;
+
+    // clear the canvas
+    this.cx.clearRect(0, 0, this.cx.width, this.cx.height);
+
+    // draw a new rect from the start position 
+    // to the current mouse position
+    this.cx.strokeRect(this.startX, this.startY, width, height);
+
+    this.prevStartX = this.startX;
+    this.prevStartY = this.startY;
+
+    this.prevWidth = width;
+    this.prevHeight = height;
+  }
+
+  line() {
+    const lineMouseDown$ = fromEvent(this.myCanvas.nativeElement, "mousedown");
+    const lineMouseMove$ = fromEvent(this.myCanvas.nativeElement, "mousemove");
+    const lineMouseUp$ = fromEvent(this.myCanvas.nativeElement, "mouseup");
+    lineMouseDown$.pipe(concatMap(down => lineMouseMove$.pipe(takeUntil(lineMouseUp$))));
+
+    const mouseDraw$ = lineMouseDown$.pipe(
       tap((e: any) => {
         this.cx.moveTo(e.offsetX, e.offsetY);
         this.cx.beginPath();
         this.isDrawing = true;
       }),
-      concatMap(() => mouseMove$.pipe(takeUntil(mouseUp$)))
+      concatMap(() => lineMouseMove$.pipe(takeUntil(lineMouseUp$)))
     );
     mouseDraw$.subscribe((e: any) => this.mouseDraw(e.offsetX, e.offsetY));
-    mouseUp$.subscribe(() => {
+    lineMouseUp$.subscribe(() => {
       this.stopDrawing()
       // this.cx.beginPath()
     })
   }
-
   mouseDraw(offsetX: any, offsetY: any) {
     if (!this.isDrawing) return; // only draw when mouse is clicked
     this.draw(offsetX, offsetY)
@@ -169,5 +248,7 @@ export class SketchpadComponent implements OnInit, AfterViewInit {
   red() { this.cx.strokeStyle = 'red'; }
   black() { this.cx.strokeStyle = 'black'; }
   grey() { this.cx.strokeStyle = 'grey'; }
+
+
 
 }
