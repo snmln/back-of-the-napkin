@@ -12,6 +12,7 @@ namespace Api.Dtos
     //public int strokeWidth { get; set; }
     //public string strokeColor { get; set; }
 
+
   }
 }
 

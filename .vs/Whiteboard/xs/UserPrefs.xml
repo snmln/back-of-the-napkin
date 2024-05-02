@@ -1,31 +1,33 @@
 ﻿<Properties StartupConfiguration="{A4807C21-E097-41A9-BD20-B2B9A7B1CA46}|http">
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
-  <MultiItemStartupConfigurations />
-  <MonoDevelop.Ide.ItemProperties.Api PreferredExecutionTarget="/Applications/Google Chrome.app" />
-  <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
-  </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Api/Hubs/whiteBoardHub.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Api/Dtos/WhiteBoardDto.cs">
     <Files>
-      <File FileName="Api/Program.cs" Line="27" Column="22" />
-      <File FileName="Api/appsettings.Development.json" Line="1" Column="1" />
-      <File FileName="Api/Hubs/ChatHub.cs" Line="46" Column="72" />
-      <File FileName="Api/Properties/launchSettings.json" Line="12" Column="14" />
-      <File FileName="Api/Hubs/whiteBoardHub.cs" Line="1" Column="1" />
+      <File FileName="Api/Hubs/ChatHub.cs" Line="75" Column="77" />
+      <File FileName="Api/Dtos/WhiteBoardDto.cs" Line="14" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
-          <Node name="Whiteboard">
-            <Node name="Api">
-              <Node name="Hubs" expanded="True">
-                <Node name="whiteBoardHub.cs" selected="True" />
-              </Node>
+          <Node name="Whiteboard" expanded="True">
+            <Node name="Api" expanded="True">
+              <Node name="Controllers" expanded="True" />
+              <Node name="Dtos" expanded="True" />
+              <Node name="Hubs" expanded="True" />
+              <Node name="Properties" expanded="True" />
+              <Node name="appsettings.json" expanded="True" />
             </Node>
           </Node>
         </State>
       </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State />
+      </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.ItemProperties.Api PreferredExecutionTarget="/Applications/Google Chrome.app" />
 </Properties>
