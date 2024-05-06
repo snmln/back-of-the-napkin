@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Api.Dtos;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -7,111 +8,94 @@ namespace Api.Services
 {
     public class ChatService
     {
-		private static readonly Dictionary<string, UserDto> Users = new Dictionary<string, UserDto>();
-        public List<string> groupList = new();
+        private static readonly Dictionary<string, UserDtoConnected> Users = new Dictionary<string, UserDtoConnected>();
+        public HashSet<string> groupList = new();
 
         public bool AddUserToList(string userToAdd)
-		{
-			lock (Users)
-			{
-				foreach(var user in Users)
-				{
-					if (user.ToLower() == userToAdd.ToLower())
-					{
-						return false;
-					}
-				}
-                var RoomName = GenerateRoomName();
+        {
+            lock (Users)
+            {
+                foreach (var user in Users)
+                {
+                    if (user.Key.ToLower() == userToAdd.ToLower())
+                    {
+                        return false;
+                    }
+                }
 
-                var newItem = new UserDto
+                var RoomName = GenerateRoomName();
+                while(groupList.Contains(RoomName))
+                {
+                    RoomName = GenerateRoomName();
+                };
+
+                var newItem = new UserDtoConnected
                 {
                     Name = userToAdd,
-                    Room = RoomName
+                    Room = RoomName,
+
                 };
-				Users.Add(userToAdd, newItem);
-                return true;
-			}
+                Users.Add(userToAdd, newItem);
 
-		}
-
-        //public bool AddRoomToUser(string userToAdd, UserDto model)
-        //{
-        //    lock (Users) {
-        //        Users.Where(i => i.Name == userToAdd).FirstOrDefault();
-
-        //    }
-        //}
-
-        public void AddUsersConnectionId(string user, string connectionId, string room)
-		{
-			lock (Users)
-			{
-				if (Users.ContainsKey(user))
-				{
-					Users[user] = connectionId;
+                foreach (KeyValuePair<string, UserDtoConnected> kvp in Users)
+                {
+                    Console.WriteLine("Key = {0}, Name = {1}, Room = {2}, ConnectionId = {3}", kvp.Key, kvp.Value.Name, kvp.Value.Room, kvp.Value.ConnectionId);
                 }
-			}
-		}
+                return true;
+            }
 
-        public void AddUsersRoom(string user, string connectionId)
+        }
+
+
+        public void AddUsersConnectionId(string user, string connectionId)
         {
             lock (Users)
             {
                 if (Users.ContainsKey(user))
                 {
-                    Users[user] = connectionId;
-
+                    Users[user].ConnectionId = connectionId;
+                    foreach (KeyValuePair<string, UserDtoConnected> kvp in Users)
+                    {
+                        Console.WriteLine("Key = {0}, Name = {1}, Room = {2}, ConnectionId = {3}", kvp.Key, kvp.Value.Name, kvp.Value.Room, kvp.Value.ConnectionId);
+                    }
                 }
             }
         }
 
+
+
         public string GetUserByConnectionId(string connectionId)
-		{
-			lock(Users)
-			{
-				return Users.Where(x => x.Value == connectionId).Select(x => x.Key).FirstOrDefault();
-			}
-		}
+        {
+            lock (Users)
+            {
+                return Users.Where(x => x.Value.ConnectionId == connectionId).Select(x => x.Key).FirstOrDefault();
+            }
+        }
         public string GetConnectionIdByUser(string user)
         {
             lock (Users)
             {
-                return Users.Where(x => x.Key == user).Select(x => x.Value).FirstOrDefault();
+                return Users.Where(x => x.Key == user).Select(x => x.Value.ConnectionId).FirstOrDefault();
             }
         }
-		public void RemoveUserFromList(string user)
-		{
-			lock (Users)
-			{
-				if (Users.ContainsKey(user))
-				{
-					Users.Remove(user);
-				}
-			}
-		}
-		public string[] GetOnlineUsers()
-		{
-			lock (Users)
-			{
-				return Users.OrderBy(x => x.Key).Select(x => x.Key).ToArray();
-			}
-		}
+        public void RemoveUserFromList(string user)
+        {
+            lock (Users)
+            {
+                if (Users.ContainsKey(user))
+                {
+                    Users.Remove(user);
+                }
+            }
+        }
+        public string[] GetOnlineUsers()
+        {
+            lock (Users)
+            {
+                return Users.OrderBy(x => x.Key).Select(x => x.Key).ToArray();
+            }
+        }
 
-        //public void AddRoomName(string newRoomName)
-        //{
-        //    lock (groupList)
-        //    {
-        //        groupList.Add(Room, newRoomName);
-        //    }
-        //}
-
-        //    public string[] GetRoomKey(string newRoomName)
-        //    {
-        //        lock (groupList)
-        //        {
-        //return newRoomName;
-        //        }
-        //    }
         public string GenerateRoomName()
         {
             Random random = new Random();

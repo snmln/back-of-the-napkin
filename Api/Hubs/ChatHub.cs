@@ -20,15 +20,8 @@ namespace Api.Hubs
 
 		public override async Task OnConnectedAsync()
         {
-            var roomName = _chatService.GenerateRoomName();
-
-
-            //old general chat
             await Groups.AddToGroupAsync(Context.ConnectionId, "Come2Chat");
-            Console.WriteLine("ConnectionId: {0}", Context.ConnectionId);
-
-            //await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
-            //_chatService.AddRoomName(roomName);
+            await Clients.Caller.SendAsync("UserConnected");
         }
 
 
@@ -42,7 +35,7 @@ namespace Api.Hubs
 		}
 
 		public async Task AddUserConnectionId(string name) {
-			_chatService.AddUsersConnectionId(name, Context.ConnectionId,"test");
+			_chatService.AddUsersConnectionId(name, Context.ConnectionId);
             await DisplayOnlineUsers();
         }
     public async Task RecieveMessage(MessageDto message)

@@ -11,8 +11,6 @@ namespace Api.Dtos
         public string To { get; set; }
         [Required]
         public string Content { get; set; }
-
-
     }
 }
 

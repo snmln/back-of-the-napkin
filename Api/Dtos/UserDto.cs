@@ -5,14 +5,17 @@ namespace Api.Dtos
 {
 	public class UserDto
 	{
-		[Required]
+        public string Room { get; set; }
+
 		[StringLength(15, MinimumLength = 3, ErrorMessage ="Name must be at atleast {2}, and maximum {1} characters")]
-
-		public string Name { get; set; }
-
-		public string Room { get; set; }
-        public string ConnectionId { get; set; }
-
+        [Required]
+        public string Name { get; set; }
+		
     }
+
+    public class UserDtoConnected: UserDto {
+            public string ConnectionId { get; set; }
+}
+
 }
 
