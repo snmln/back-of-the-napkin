@@ -10,6 +10,9 @@ namespace Api.Dtos
 
 		public string Name { get; set; }
 
-	}
+		public string Room { get; set; }
+        public string ConnectionId { get; set; }
+
+    }
 }
 

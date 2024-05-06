@@ -5,6 +5,8 @@ import { ChatInputComponent } from '../chat-input/chat-input.component';
 import { MessagesComponent } from "../messages/messages.component";
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PrivateChatComponent } from '../private-chat/private-chat.component';
+import { RoomKeyComponent } from '../room-key/room-key.component';
+
 @Component({
   selector: 'app-chat',
   standalone: true,
@@ -21,6 +23,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
   ngOnInit(): void {
     this.chatService.createChatConnection();
+    this.modalService.open(RoomKeyComponent)
+
   }
 
   backToHome() {

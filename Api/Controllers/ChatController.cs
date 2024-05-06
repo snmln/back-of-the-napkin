@@ -25,6 +25,7 @@ namespace Api.Controllers
             }
             return BadRequest("This name is taken please choose another name");
         }
+
     }
 }
 

@@ -1,25 +1,38 @@
-﻿using Api.Dtos;
+﻿using System;
+using System.Text;
+using Api.Dtos;
 using Api.Services;
 using Microsoft.AspNetCore.SignalR;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Api.Hubs
 {
-	public class ChatHub: Hub
+	public class ChatHub : Hub
 	{
 		private readonly ChatService _chatService;
+		public List<string> groupList = new();
 
 		public ChatHub(ChatService chatService)
 		{
 			_chatService = chatService;
-        }
+		}
+
 
 		public override async Task OnConnectedAsync()
-		{
-			await Groups.AddToGroupAsync(Context.ConnectionId, "Come2Chat");
-			await Clients.Caller.SendAsync("UserConnected");
-		}
-		public override async Task OnDisconnectedAsync(Exception exception)
+        {
+            var roomName = _chatService.GenerateRoomName();
+
+
+            //old general chat
+            await Groups.AddToGroupAsync(Context.ConnectionId, "Come2Chat");
+            Console.WriteLine("ConnectionId: {0}", Context.ConnectionId);
+
+            //await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
+            //_chatService.AddRoomName(roomName);
+        }
+
+
+        public override async Task OnDisconnectedAsync(Exception exception)
 		{
 			await Groups.RemoveFromGroupAsync(Context.ConnectionId, "Come2Chat");
 			var user = _chatService.GetUserByConnectionId(Context.ConnectionId);
@@ -29,7 +42,7 @@ namespace Api.Hubs
 		}
 
 		public async Task AddUserConnectionId(string name) {
-			_chatService.AddUsersConnectionId(name, Context.ConnectionId);
+			_chatService.AddUsersConnectionId(name, Context.ConnectionId,"test");
             await DisplayOnlineUsers();
         }
     public async Task RecieveMessage(MessageDto message)
@@ -69,7 +82,18 @@ namespace Api.Hubs
 			var stringCompare = string.CompareOrdinal(from, to) < 0;
             return stringCompare ? $"{from}-{to}" : $"{to}-{from}";
 		}
-    public async Task SendDraw(WhiteBoardDto coordinates)
+
+   //     private string GenerateGroupName()
+   //     {
+   //         Random random = new Random();
+   //         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+   //          var roomCode = new string(Enumerable.Repeat(chars, 5)
+			//	.Select(s => s[random.Next(s.Length)]).ToArray());
+			//return roomCode;
+   //     }
+
+        public async Task SendDraw(WhiteBoardDto coordinates)
     {
 	
       await Clients.Groups("Come2Chat").SendAsync("ReceiveDraw", coordinates);

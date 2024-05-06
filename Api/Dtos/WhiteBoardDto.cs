@@ -11,8 +11,6 @@ namespace Api.Dtos
     public int yCord { get; set; }
     //public int strokeWidth { get; set; }
     //public string strokeColor { get; set; }
-
-
   }
 }
 

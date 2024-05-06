@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule, FormsModule, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
-
 import { CommonModule } from '@angular/common';
 import { ChatService } from '../services/chat.service';
 import { ChatComponent } from "../chat/chat.component";
@@ -30,7 +29,7 @@ export class HomeComponent {
   openChat = false;
   public joiningRoom = false;
 
-  constructor(private formBuilder: FormBuilder, private chatService: ChatService) { }
+  constructor(private formBuilder: FormBuilder, private chatService: ChatService,) { }
   ngOnInit(): void {
     this.initializeForm();
   }
@@ -57,27 +56,6 @@ export class HomeComponent {
       });
     }
   }
-  CheckBox(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-
-      const value = control.value;
-
-      if (!value) {
-        return null;
-      }
-
-      const hasUpperCase = /[A-Z]+/.test(value);
-
-      const hasLowerCase = /[a-z]+/.test(value);
-
-      const hasNumeric = /[0-9]+/.test(value);
-
-      const passwordValid = hasUpperCase && hasLowerCase && hasNumeric;
-
-      return !passwordValid ? { passwordStrength: true } : null;
-    }
-  }
-
   closeChat() {
     this.openChat = false;
   }
