@@ -8,7 +8,7 @@ namespace Api.Services
 {
     public class ChatService
     {
-        private static readonly Dictionary<string, UserDtoConnected> Users = new Dictionary<string, UserDtoConnected>();
+        public static readonly Dictionary<string, UserDtoConnected> Users = new Dictionary<string, UserDtoConnected>();
         public HashSet<string> groupList = new();
 
         public bool AddUserToList(string userToAdd)
