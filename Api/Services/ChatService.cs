@@ -8,7 +8,7 @@ namespace Api.Services
 {
     public class ChatService
     {
-        public static readonly Dictionary<string, UserDtoConnected> Users = new Dictionary<string, UserDtoConnected>();
+        private static readonly Dictionary<string, UserDtoConnected> Users = new Dictionary<string, UserDtoConnected>();
         public HashSet<string> groupList = new();
 
         public bool AddUserToList(string userToAdd)
@@ -46,6 +46,14 @@ namespace Api.Services
 
         }
 
+        public string GetRoomNameByUser(string user, string connectId)
+        {
+            lock (Users)
+            {
+                return Users.Where(item => item.Value.Name == user && item.Key == user && item.Value.ConnectionId == connectId).Select(x => x.Value.Room).FirstOrDefault();
+
+            }
+        }
 
         public void AddUsersConnectionId(string user, string connectionId)
         {

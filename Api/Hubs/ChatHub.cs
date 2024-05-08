@@ -76,19 +76,14 @@ namespace Api.Hubs
 
         private string GetPrivateGroupName(string from, string to)
         {
-
             var stringCompare = string.CompareOrdinal(from, to) < 0;
             return stringCompare ? $"{from}-{to}" : $"{to}-{from}";
         }
 
-        public string GetGroupName(string user, string connectId)
+        public async Task GetGroupName(string user)
         {
-            var containsUser = _chatService.Users.Where(item => item.Value.Name == user && item.Value.ConnectionId == connectId);
-            
-Console.WriteLine("containsUser: {0}", containsUser);
-            return "success";
-
-
+            var groupName = _chatService.GetRoomNameByUser(user, Context.ConnectionId);
+             await Clients.Groups("Come2Chat").SendAsync("GroupName", groupName);
         }
 
         public async Task SendDraw(WhiteBoardDto coordinates)

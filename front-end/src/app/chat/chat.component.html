@@ -9,6 +9,8 @@
     <div class="col-lg-2">
         <div class="car border-secondary mb-3">
             <div class="card-header h3 text-muted text-center">users</div>
+            <div class="card-header h4 text-muted text-center">{{chatService.GroupName}}</div>
+
             <div class="card-boady" style="min-height: 555px;">
                 <div class="row mt-1" *ngFor="let user of chatService.onlineUsers">
                     <div class="col">

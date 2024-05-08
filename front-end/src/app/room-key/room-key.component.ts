@@ -16,4 +16,7 @@ export class RoomKeyComponent implements OnDestroy {
   ngOnDestroy(): void {
     // this.chatService.closePrivateChatMessage(this.toUser);
   }
+  copyRoomKey(val: string) {
+    navigator.clipboard.writeText(val)
+  }
 }

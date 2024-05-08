@@ -3,13 +3,16 @@
 </div>
 <div class="modal-body">
     <div class="card border-secondary">
-        <div class="card-header h3 test-muted text-center">place holder roomkey</div>
+        <div class="card-header h3 test-muted text-center">Room Code</div>
 
 
         <div class="card-body">
-            <!-- <app-messages [messages]="chatService.privateMessages"></app-messages> -->
-            <div class="card-footer">
-                <!-- <app-chat-input (contentEmitter)="sendMessage($event)"></app-chat-input> -->
+            <div class="text-center">
+                <div class=" h1 py-8">{{chatService.GroupName}}</div>
+                <button type="button" class="btn btn-primary text-center" (click)="copyRoomKey(chatService.GroupName)">
+                    Copy to Clipboard
+                </button>
             </div>
+
         </div>
     </div>

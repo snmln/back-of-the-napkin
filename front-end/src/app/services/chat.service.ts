@@ -21,6 +21,7 @@ export class ChatService {
   privateMessageInnitiated = false;
   // public sketchPad: SketchpadComponent;
   sketchPad = new Subject<any>();
+  GroupName: string;
 
   constructor(private httpClient: HttpClient, private modalService: NgbModal) { }
   registerUser(user: User) {
@@ -32,8 +33,13 @@ export class ChatService {
 
     this.chatConnection.on('UserConnected', () => {
       this.addUserConnectionId();
-    });
+      this.getUserRoomName();
 
+    });
+    this.chatConnection.on('GroupName', (roomName) => {
+      this.GroupName = roomName
+      console.log('roomName', roomName)
+    });
     this.chatConnection.on('OnlineUsers', (onlineUsers) => {
       this.onlineUsers = [...onlineUsers];
     });
@@ -48,9 +54,7 @@ export class ChatService {
       modalRef.componentInstance.toUser = newMessage.from;
     });
     this.chatConnection.on('NewPrivateMessage', (newMessage: Message) => {
-
       this.privateMessages = [...this.privateMessages, newMessage];
-
     });
 
     this.chatConnection.on('ClosePrivateChat', () => {
@@ -90,6 +94,10 @@ export class ChatService {
   }
   async addUserConnectionId() {
     return this.chatConnection?.invoke('AddUserConnectionId', this.myName).catch(error => console.log(error));
+  }
+  async getUserRoomName() {
+    console.log('getUserRoomName called')
+    return this.chatConnection?.invoke('GetGroupName', this.myName).catch(error => console.log(error));
   }
 
   async sendMessage(content: string) {
