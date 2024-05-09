@@ -37,7 +37,7 @@ export class HomeComponent {
   initializeForm() {
     this.userForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(15)]],
-      room: ['', [Validators.minLength(5), Validators.maxLength(5)]]
+      roomCode: ['', [Validators.minLength(5), Validators.maxLength(5)]]
     })
   }
 
@@ -45,9 +45,12 @@ export class HomeComponent {
     this.submitted = true;
     this.apiErrorMessage = [];
     if (this.userForm.valid) {
+      console.log('roomCode', this.userForm.get('roomCode')?.value);
+
       this.chatService.registerUser(this.userForm.value).subscribe({
         next: () => {
           this.chatService.myName = this.userForm.get('name')?.value;
+          this.chatService.existingGroup = this.userForm.get('roomCode')?.value;
           this.openChat = true;
           this.userForm.reset();
           this.submitted = false;

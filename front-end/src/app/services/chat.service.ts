@@ -21,10 +21,12 @@ export class ChatService {
   privateMessageInnitiated = false;
   // public sketchPad: SketchpadComponent;
   sketchPad = new Subject<any>();
-  GroupName: string;
+  groupName: string;
+  existingGroup: string;
 
   constructor(private httpClient: HttpClient, private modalService: NgbModal) { }
   registerUser(user: User) {
+    console.log('user', user);
     return this.httpClient.post(`${environment.apiUrl}api/chat/register-user`, user, { responseType: 'text' });
   }
   createChatConnection() {
@@ -37,8 +39,8 @@ export class ChatService {
 
     });
     this.chatConnection.on('GroupName', (roomName) => {
-      this.GroupName = roomName
-      console.log('roomName', roomName)
+      this.groupName = roomName
+
     });
     this.chatConnection.on('OnlineUsers', (onlineUsers) => {
       this.onlineUsers = [...onlineUsers];

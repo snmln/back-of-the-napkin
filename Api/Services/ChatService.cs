@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Api.Dtos;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -11,39 +12,60 @@ namespace Api.Services
         private static readonly Dictionary<string, UserDtoConnected> Users = new Dictionary<string, UserDtoConnected>();
         public HashSet<string> groupList = new();
 
-        public bool AddUserToList(string userToAdd)
+        public bool AddUserToList(string userToAdd, string roomToAdd)
         {
             lock (Users)
-            {
-                foreach (var user in Users)
+                lock (groupList)
                 {
-                    if (user.Key.ToLower() == userToAdd.ToLower())
+                    foreach (var groups in groupList)
                     {
-                        return false;
+                        //checking if room is in group list
+                        if (groupList.Contains(roomToAdd)){
+                            //check for user name
+                            foreach (var user in Users)
+                            {
+                                //Need to check if name is in use in the same room. 
+                                if (user.Key.ToLower() == userToAdd.ToLower() || user.Value.Room == roomToAdd)
+                                {
+                                    return false;
+                                }
+                            }
+                        }
                     }
+
+                    var RoomName = GenerateRoomName();
+                    while (groupList.Contains(RoomName))
+                    {
+                        RoomName = GenerateRoomName();
+                    };
+
+                    var newItem = new UserDtoConnected
+                    {
+                        Name = userToAdd,
+                        Room = RoomName,
+
+                    };
+                    Users.Add(userToAdd, newItem);
+
+                    foreach (KeyValuePair<string, UserDtoConnected> kvp in Users)
+                    {
+                        Console.WriteLine("Key = {0}, Name = {1}, Room = {2}, ConnectionId = {3}", kvp.Key, kvp.Value.Name, kvp.Value.Room, kvp.Value.ConnectionId);
+                    }
+                    return true;
                 }
 
-                var RoomName = GenerateRoomName();
-                while(groupList.Contains(RoomName))
-                {
-                    RoomName = GenerateRoomName();
-                };
+        }
 
-                var newItem = new UserDtoConnected
+        public bool AddUserToRoom(string Room)
+        {
+            lock (groupList)
+            {
+                if (groupList.Contains(Room))
                 {
-                    Name = userToAdd,
-                    Room = RoomName,
-
-                };
-                Users.Add(userToAdd, newItem);
-
-                foreach (KeyValuePair<string, UserDtoConnected> kvp in Users)
-                {
-                    Console.WriteLine("Key = {0}, Name = {1}, Room = {2}, ConnectionId = {3}", kvp.Key, kvp.Value.Name, kvp.Value.Room, kvp.Value.ConnectionId);
+                    return false;
                 }
                 return true;
             }
-
         }
 
         public string GetRoomNameByUser(string user, string connectId)

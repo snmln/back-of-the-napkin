@@ -16,14 +16,16 @@ namespace Api.Controllers
             _chatService = chatService;
         }
         [HttpPost("register-user")]
-        public IActionResult RegisterUser(UserDto model)
+        public IActionResult RegisterUser(UserDtoConnected model)
         {
-            if (_chatService.AddUserToList(model.Name))
+            //check for a valid name 
+            if (_chatService.AddUserToList(model.Name, model.Room))
             {
-                //202 status code
-                return NoContent();
+                    //202 status code
+                    return NoContent();
             }
             return BadRequest("This name is taken please choose another name");
+
         }
 
     }

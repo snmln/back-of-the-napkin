@@ -23,15 +23,15 @@
                     <h5>Joining an existing napkin? Enter</h5>
 
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" placeholder="Room Code" formControlName="room"
-                            [class.is-invalid]="submitted && userForm.get('name')?.errors">
+                        <input type="text" class="form-control" placeholder="Room Code" formControlName="roomCode"
+                            [class.is-invalid]="submitted && userForm.get('roomCode')?.errors">
                         <label for="">Room Code</label>
 
-                        <span class="text-danger" *ngIf="submitted && userForm.get('room')?.hasError('required')">
+                        <span class="text-danger" *ngIf="submitted && userForm.get('roomCode')?.hasError('required')">
                             Please provide Room Code
                         </span>
                         <span class="text-danger" *ngIf="submitted && userForm.get('room')?.hasError('maxlength') || 
-                        userForm.get('room')?.hasError('minlength')">
+                        userForm.get('roomCode')?.hasError('minlength')">
                             Room Code must be 5 characters
                         </span>
                     </div>
